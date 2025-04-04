@@ -1,31 +1,21 @@
-import google.generativeai as genai
-from config import gemini_api_key
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+import os
 
-"""
-Wrapper for Google's Gemini model.
-Handles text generation using the specified model.
-"""
+# Load environment variables
+load_dotenv()
+
 class GeminiWrapper:
-    def __init__(self, model_name="gemini-1.5-flash"):
-        """
-        Initializes the Gemini model.
-
-        Args:
-            model_name : Name of the Gemini model to use.
-        """
+    def __init__(self, model_name="gemini-2.0-flash-001"):
         self.model_name = model_name
-        genai.configure(api_key=gemini_api_key)
-        self.model = genai.GenerativeModel(model_name)
+        self.llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            temperature=0,
+            max_tokens=None,
+            timeout=None,
+            max_retries=2
+        )
 
     def generate(self, prompt):
-        """
-        Generates text based on the input prompt.
-
-        Args:
-            prompt : Input text.
-
-        Returns:
-            Generated response or error message.
-        """
-        response = self.model.generate_content(prompt)
-        return response.text if response else "No response from Gemini."
+        response = self.llm.invoke(prompt)
+        return response.content if response else "No response from Gemini."

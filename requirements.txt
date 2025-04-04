@@ -1,0 +1,11 @@
+webdriver-manager
+google-generativeai 
+chromadb
+selenium
+langchain
+unstructured
+streamlit
+pyautogen
+langchain-tavily
+python-dotenv
+ag2[openai]

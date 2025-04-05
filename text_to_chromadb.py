@@ -1,47 +1,73 @@
 import google.generativeai as genai
 import chromadb
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from config import gemini_api_key
+import os
 
-class TextToChromaDB:
-    def __init__(self, api_key, db_path="./chromadb_store"):
-        """Initialize the class with API key and ChromaDB storage path."""
-        self.api_key = api_key
-        self.db_path = db_path
-        genai.configure(api_key=self.api_key)
-        self.chroma_client = chromadb.PersistentClient(path=self.db_path)
-        self.collection = self.chroma_client.get_or_create_collection(name="dxfactor_db")
+class DXFactorSearchEngine:
+    def __init__(self, data_path: str, chroma_path: str = "./chromadb_store", collection_name: str = "dxfactor_db"):
 
-    def get_embedding(self, text):
-        """Generate embeddings using Google Gemini API."""
-        response = genai.embed_content(model="models/embedding-001", content=text, task_type="retrieval_document")
-        return response["embedding"]
+        # 2️⃣ Initialize ChromaDB (Persistent Client)
+        self.chroma_client = chromadb.PersistentClient(path=chroma_path)
+        self.collection = self.chroma_client.get_or_create_collection(name=collection_name)
 
-    def load_and_split_text(self, file_path, chunk_size=300, chunk_overlap=100):
-        """Load text from file and split into smaller chunks."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            full_text = file.read()
-        
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size, 
+        # 3️⃣ Load data from file
+        self.data_path = data_path
+        self.full_text = self._load_data()
+
+        # 4️⃣ Initialize embedding model
+        self.embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+
+    def _load_data(self) -> str:
+        with open(self.data_path, "r", encoding="utf-8") as file:
+            return file.read()
+
+    def _get_embedding(self, text: str) -> list:
+        return self.embedding_model.embed_query(text)
+
+    def preprocess_and_store(self, chunk_size: int = 500, chunk_overlap: int = 50):
+        # 5️⃣ Split Text into Chunks
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
-            length_function=len, 
+            length_function=len,
             add_start_index=True
         )
-        return text_splitter.split_text(full_text)
-
-    def store_embeddings(self, file_path):
-        """Convert text chunks into embeddings and store them in ChromaDB."""
-        chunks = self.load_and_split_text(file_path)
+        chunks = splitter.split_text(self.full_text)
         print(f"Split data into {len(chunks)} chunks.")
-        
+
+        # 6️⃣ Convert Chunks to Embeddings and Store in ChromaDB
         for idx, chunk in enumerate(chunks):
-            embedding = self.get_embedding(chunk)
-            self.collection.add(ids=[str(idx)], embeddings=[embedding], metadatas=[{"text": chunk}])
-        
+            embedding = self._get_embedding(chunk)
+            self.collection.add(
+                ids=[str(idx)],
+                embeddings=[embedding],
+                metadatas=[{"text": chunk}]
+            )
         print("Data stored successfully in ChromaDB!")
 
-# Example Usage
+    def search(self, query: str, n_results: int = 5):
+        # 7️⃣ Query ChromaDB
+        query_embedding = self._get_embedding(query)
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=n_results
+        )
+        return results["metadatas"][0]
+
+    def display_results(self, response):
+        # 8️⃣ Display Results
+        for item in response:
+            print(f"🔹 Relevant Text: {item['text']}")
+
+
+# Example usage:
 if __name__ == "__main__":
-    processor = TextToChromaDB(api_key=gemini_api_key)
-    processor.store_embeddings("dxfactor_data.txt")
+    engine = DXFactorSearchEngine(
+        data_path="dxfactor_data.txt"
+    )
+
+    engine.preprocess_and_store()
+    response = engine.search("What services does DXFactor provide?")
+    engine.display_results(response)

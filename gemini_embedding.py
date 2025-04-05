@@ -12,10 +12,8 @@ class GoogleEmbeddingModel:
     def get_embedding(self, text):
         """
         Converts text into an embedding.
-
         Args:
-            text : Input text.
-
+            text : input text.
         Returns:
             list: Embedding vector.
         """

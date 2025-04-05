@@ -13,6 +13,6 @@ class VectorDatabase:
     def retrieve_documents(self, query):
         embedding_model = GoogleEmbeddingModel()  # Create object
         query_embedding = embedding_model.get_embedding(query)
-        results = self.collection.query(query_embeddings=[query_embedding], n_results=3)
+        results = self.collection.query(query_embeddings=[query_embedding], n_results=10)
         return [item["text"] for item in results["metadatas"][0]]
 

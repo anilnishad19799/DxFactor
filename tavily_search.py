@@ -4,18 +4,13 @@ from config import tavily_api_key
 class TavilySearchEngine:
 
     def __init__(self):
-        """
-        Initializes the Tavily search engine with an API key.
-        """
         self.tavily = TavilySearch(tavily_api_key=tavily_api_key)
 
     def search(self, query):
         """
-        Searches the web using Tavily.
-
+        Searches the web using Tavily Search.
         Args:
-            query : The search query.
-
+            query : query.
         Returns:
             Search results with top 5 results.
         """

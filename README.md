@@ -89,7 +89,7 @@ GOOGLE_API_KEY=your_google_api_key
 TAVILY_API_KEY=your_tavily_api_key
 ```
 
-### 5) Scrape website & store data in ChromaDB (Optional if already done in my case it is already done and data is on GitHub):
+### 5) Scrape website & store data in ChromaDB:
 ```bash
 # Run scraper to get website data
 python dxfactor_scraper.py

@@ -7,7 +7,7 @@ class VectorDatabase:
     Manages the ChromaDB vector database.
     """
     def __init__(self):
-        self.client = PersistentClient(path="./chromadb_store")
+        self.client = PersistentClient(path="../chromadb_store")
         self.collection = self.client.get_collection(name="dxfactor_db")
 
     def retrieve_documents(self, query):

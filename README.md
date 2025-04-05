@@ -19,7 +19,7 @@ A Retrieval-Augmented Generation (RAG) chatbot built using **Google Gemini API**
 1. **Scrape** DXFactor's content using Selenium.  
 2. **Embed** and store text in **ChromaDB** using Gemini embeddings.  
 3. **Retrieve** relevant content for user queries via vector similarity.  
-4. **Generate** response using **Gemini 1.5 Turbo**.  
+4. **Generate** response using **gemini-2.0-flash-001**.  
 5. **Fallback** to **Tavily Search API** when no relevant data is found locally.  
 
 ---

@@ -1,10 +1,10 @@
-from rag_agent import AgenticRAGWorkflow
+from rag_agent import RAGWorkflow
 import streamlit as st
 
 # Streamlit UI
-workflow = AgenticRAGWorkflow()
-st.title("Agentic Corrective Workflow with LangChain Memory")
-query = st.text_input("Enter your query:")
+workflow = RAGWorkflow()
+st.title("DxFactor Chat Agent")
+query = st.text_input("Enter your question : ")
 if st.button("Get Answer"):
     if query:
         response, source = workflow.process_query(query)

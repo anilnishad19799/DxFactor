@@ -8,4 +8,6 @@ streamlit
 pyautogen
 langchain-tavily
 python-dotenv
+langchain-community
+langchain_google_genai
 ag2[openai]

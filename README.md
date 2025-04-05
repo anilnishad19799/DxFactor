@@ -94,7 +94,7 @@ TAVILY_API_KEY=your_tavily_api_key
 # Run scraper to get website data
 python dxfactor_scraper.py
 
-# This generates dxfactor_data.txt
+# This generates dxfactor_data.txt and pass this txt file path into text_to_chromadb.py
 # Then convert it to vector store
 python text_to_chromadb.py
 ```

@@ -8,15 +8,15 @@ import os
 class DXFactorSearchEngine:
     def __init__(self, data_path: str, chroma_path: str = "./chromadb_store", collection_name: str = "dxfactor_db"):
 
-        # 2️⃣ Initialize ChromaDB (Persistent Client)
+        # Initialize ChromaDB (Persistent Client)
         self.chroma_client = chromadb.PersistentClient(path=chroma_path)
         self.collection = self.chroma_client.get_or_create_collection(name=collection_name)
 
-        # 3️⃣ Load data from file
+        # Load data from file
         self.data_path = data_path
         self.full_text = self._load_data()
 
-        # 4️⃣ Initialize embedding model
+        # Initialize embedding model
         self.embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
     def _load_data(self) -> str:
@@ -27,7 +27,7 @@ class DXFactorSearchEngine:
         return self.embedding_model.embed_query(text)
 
     def preprocess_and_store(self, chunk_size: int = 500, chunk_overlap: int = 50):
-        # 5️⃣ Split Text into Chunks
+        # Split Text into Chunks
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
@@ -37,7 +37,7 @@ class DXFactorSearchEngine:
         chunks = splitter.split_text(self.full_text)
         print(f"Split data into {len(chunks)} chunks.")
 
-        # 6️⃣ Convert Chunks to Embeddings and Store in ChromaDB
+        # Convert Chunks to Embeddings and Store in ChromaDB
         for idx, chunk in enumerate(chunks):
             embedding = self._get_embedding(chunk)
             self.collection.add(
@@ -48,7 +48,7 @@ class DXFactorSearchEngine:
         print("Data stored successfully in ChromaDB!")
 
     def search(self, query: str, n_results: int = 5):
-        # 7️⃣ Query ChromaDB
+        # Query ChromaDB
         query_embedding = self._get_embedding(query)
         results = self.collection.query(
             query_embeddings=[query_embedding],
